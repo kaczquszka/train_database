@@ -1,8 +1,10 @@
 USE train_project
 GO
---function returns percentage value of seats that were occupied during total time of journey
---it returns a table of all trains that were coursing on the route passed as parameter
-CREATE FUNCTION dbo.all_occupancy_on_route(@route_id VARCHAR(8))
+/*
+1 QUERY
+returns percentage value of seats that were occupied during total time of journey
+*/
+CREATE FUNCTION dbo.all_occupancy_on_route()
 RETURNS @result TABLE(
 	train_id INT,
 	percentage_occupied DECIMAL(5,2)
@@ -35,7 +37,7 @@ BEGIN
             WHEN EXISTS (SELECT *
             FROM CONNECTIONS
             WHERE (carriage_id = c.carriage_id AND s.seat_number = seat_number)
-            AND (rs.stop_order >=starting_order AND rs.stop_order <= destination_order)) THEN 1
+            AND (rs.stop_order >=starting_order AND rs.stop_order <= destination_order) AND train_id = t.train_id) THEN 1
             ELSE 0
         END
     FROM TRAIN AS t
@@ -47,8 +49,7 @@ BEGIN
 
     CROSS JOIN ROUTE_STOPS AS rs
 
-    WHERE t.route_id = @route_id
-    AND rs.route_id = @route_id;
+    WHERE rs.route_id = t.route_id;
 
     INSERT INTO @result
     SELECT train_id, CAST(
@@ -61,8 +62,15 @@ BEGIN
     RETURN;
 END;
 
+SELECT * FROM TRAIN;
+SELECT * FROM CARRIAGES_IN_TRAIN
 --DROP FUNCTION dbo.all_occupancy_on_route
-SELECT TOP 5 *
-FROM dbo.all_occupancy_on_route('IC2810')
+SELECT *
+FROM dbo.all_occupancy_on_route()
 ORDER BY percentage_occupied DESC;
 
+
+SELECT *
+FROM TRAIN as t
+INNER JOIN dbo.all_occupancy_on_route() AS o
+ON t.train_id = o.train_id

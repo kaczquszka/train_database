@@ -1,6 +1,17 @@
 USE train_project
 GO
 
+/*
+4 QUERIES:
+GET CONNECTIONS FROM STATION A TO B WITHIN 2 DAYS FROM PROVIDED DATE
+1. DIRECT TRAINS
+2. EXACTLY ONE CHANGE
+3. EXACTLY TWO CHANGES
+4. CALCULATE THE TIME OF JOURNEY FROM THE MOMENT OF DEPARTURE FROM STARTING STATION TO THE MOMENT OF ARRIVAL TO THE DESTINATION IN MINUTES
+
+FOURTH QUERY IS CALCULATED WITH FUNCTION 'CALCULATE_TIME' AND IMPLEMENTED IN EACH OF SELECTS FROM THE QUERIES 1-3
+*/
+
 -------------------------------------------------HELPER FUNCTIONS------------------------------------------------------
 --RETURNS ALL TRAINS THAT RUN AT GIVEN DATE
 
@@ -54,7 +65,7 @@ WHERE  (t.stop_order <= (SELECT stop_order FROM ROUTE_STOPS WHERE station_id = @
 
 GO
 
---- RETURNS TRAINS THAT DO NOT STOP AT NEITHER THE DESTINATION NOR THE STARTINF STATION
+--- RETURNS TRAINS THAT DO NOT STOP AT NEITHER THE DESTINATION NOR THE STARTING STATION
 CREATE FUNCTION dbo.OTHER_TRAINS (@starting_stop INT, @ending_stop INT, @date DATE)
 RETURNS TABLE
 AS
@@ -76,7 +87,7 @@ JOIN dbo.ALL_TRAINS(@date) AS starting
 ON destination.station_id = @destination_station AND starting.station_id = @starting_station AND destination.train_id = @last_train AND starting.train_ID = @first_train);
 
 GO
---SELECT * FROM dbo.CALCULATE_TIME(1,3,3,10,'12-08-2025')
+
 
 ----------------------------------------CONNECTION FINDING------------------------------------------------------------------
 --RETURNS DIRECT TRAINS
@@ -126,17 +137,18 @@ FROM STATION
 WHERE station_name = 'Warszawa Centralna';
 
 
+--------------------------------------------------------------------------------------------------
+
 --DIRECT
 SELECT train_id, route_id, datetime_arrival, DURATION_MINUTES 
 FROM dbo.DIRECT(@destination_station_id,@date, @starting_station_id) AS train_details
 
-
+-----------------------------------------------------------------------------------------------------
 
 --ONE SWITCH
 SELECT * FROM dbo.ONE_SWITCH(@destination_station_id,@date, @starting_station_id)
 
-
-
+-------------------------------------------------------------------------------------------------------
 
 --TWO SWITCHES
 SELECT fst.FIRST_TRAIN, fst.datetime_departure AS DEPARTURE_DATETIME, fst.station_id AS FIRST_CHANGE_STATION, fst.SECOND_TRAIN, snd.station_id AS SECOND_CHANGE_STATION, snd.THIRD_TRAIN, snd.datetime_arrival AS ARRIVAL_DATETIME, (SELECT * FROM CALCULATE_TIME(@destination_station_id, @starting_station_id, fst.FIRST_TRAIN, snd.THIRD_TRAIN, @date)) AS DURATION_MINUTES
@@ -170,3 +182,4 @@ INNER JOIN (
 --joing two tables together on the same second train
 ON fst.SECOND_TRAIN = snd.SECOND_TRAIN
 
+-------------------------------------------------------------------------------------------------------------------------------------------------------

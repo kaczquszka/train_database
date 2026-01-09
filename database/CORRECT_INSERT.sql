@@ -1,5 +1,6 @@
 USE train_project;
 GO
+
 INSERT INTO WEEKDAYS (weekday_name) VALUES
 ('Monday'),
 ('Tuesday'),
@@ -382,24 +383,31 @@ INSERT INTO TICKETS (total_price, payment_method, discount_id, users_id) VALUES
 (180.30, 'google pay', 6, 12),   -- Disabled/Guardian (49%)
 (65.00, 'apple pay', 12, 13),    -- IC Pass
 (115.00, 'credit card', NULL, 14),
-(19.99, 'blik', NULL, 15);
+(105.00, 'credit card', NULL, 11),
+(115.00, 'credit card', NULL, 8),
+(119.99, 'blik', NULL, 2),
+(219.99, 'blik', NULL, 4),
+(89.99, 'blik', NULL, 1);
 
 INSERT INTO CONNECTIONS (ticket_id, connection_order, price, carriage_id, seat_number, train_id, route_id, starting_order, destination_order) VALUES
-(1, 1, 150.50, 1, 1, 1, 'EIP5100', 1, 3),  
+(1, 1, 150.50, 1, 1, 1, 'IC2810', 1, 3),  
 (2, 1, 75.00, 4, 15, 2, 'IC2810', 1, 3),  
 (3, 1, 120.20, 1, 3, 4, 'IC1703', 1, 2),  -- T3: Warszawa -> Poznan
 (3, 2, 130.00, 10, 2, 10, 'IC2604', 2, 3),  -- T3: Poznan -> Krakow
 (4, 1, 45.99, 6, 1, 2, 'IC2810', 2, 3),  
-(5, 1, 12.00, 2, 5, 1, 'EIP5100', 2, 3), 
+(5, 1, 12.00, 2, 5, 1, 'IC2810', 2, 3), 
 (6, 1, 320.00, 2, 6, 4, 'IC1703', 1, 3), 
-(7, 1, 88.50, 3, 10, 1, 'EIP5100', 1, 2), 
+(7, 1, 88.50, 3, 10, 1, 'IC2810', 1, 2), 
 (8, 1, 140.00, 4, 16, 2, 'IC2810', 1, 2), 
 (9, 1, 105.10, 5, 20, 3, 'TLK4301', 1, 3),
 (10, 1, 99.99, 1, 1, 4, 'IC1703', 1, 2),
 (11, 1, 50.00, 6, 1, 2, 'IC2810', 1, 3),
-(12, 1, 180.30, 2, 6, 1, 'EIP5100', 1, 3),
+(12, 1, 180.30, 2, 6, 1, 'IC2810', 1, 3),
 (13, 1, 65.00, 4, 1, 2, 'IC2810', 1, 2),
-(14, 1, 115.00, 1, 2, 4, 'IC1703', 2, 3);
+(14, 1, 115.00, 6, 2, 2, 'IC2810', 1, 3),
+(15, 1, 119.99, 2, 5, 1, 'IC2810', 1, 3),
+(16, 1, 219.99, 4, 3, 2, 'IC2810', 1, 2),
+(17, 1, 89.99, 1, 3, 4, 'IC1703', 2, 3);
 
 INSERT INTO PRICING_FOR_CONNECTION (pricing_id, ticket_id, connection_order) VALUES
 -- EIP5100, Class 2, 410km

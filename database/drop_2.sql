@@ -7,3 +7,6 @@ DROP FUNCTION dbo.OTHER_TRAINS;
 DROP FUNCTION dbo.DIRECT;
 DROP FUNCTION dbo.CALCULATE_TIME;
 DROP FUNCTION dbo.ONE_SWITCH;
+DROP VIEW vw_km_travelled;
+DROP VIEW vw_connections_prices;
+DROP FUNCTION dbo.all_occupancy_on_route;
