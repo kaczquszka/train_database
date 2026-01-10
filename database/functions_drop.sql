@@ -9,4 +9,6 @@ DROP FUNCTION dbo.CALCULATE_TIME;
 DROP FUNCTION dbo.ONE_SWITCH;
 DROP VIEW vw_km_travelled;
 DROP VIEW vw_connections_prices;
+DROP VIEW vw_total_weight_carriages;
+DROP VIEW vw_total_weight_train;
 DROP FUNCTION dbo.all_occupancy_on_route;
