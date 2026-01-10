@@ -24,7 +24,7 @@ CREATE TABLE LOCOMOTIVES(
 	locomotive_model VARCHAR(30) NOT NULL,
 	company VARCHAR(50) NOT NULL,
 	production_year SMALLINT NOT NULL CHECK(production_year BETWEEN 1900 AND 2100),
-	pulling_force SMALLINT NOT NULL CHECK(pulling_force BETWEEN 0 AND 500),
+	pulling_weight INT NOT NULL CHECK(pulling_weight BETWEEN 0 AND 50000),
 	max_speed SMALLINT NOT NULL CHECK(max_speed BETWEEN 0 AND 400)
 );
 

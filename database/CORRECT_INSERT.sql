@@ -94,22 +94,22 @@ INSERT INTO ROUTE_STOPS (route_id, station_id, stop_order, arrival_time, departu
 
 
 
-INSERT INTO LOCOMOTIVES (locomotive_model, company, production_year, pulling_force, max_speed) VALUES
-('EP09', 'PKP Intercity', 2000, 380, 160),
-('EU07', 'Newag', 1985, 300, 125),
-('Husky-500', 'Siemens Mobility', 2018, 450, 200),
-('ED161 (Dart)', 'PESA Bydgoszcz', 2016, 320, 160),
-('EP08', 'PKP Intercity', 1978, 350, 140),
-('E6ACT', 'Newag', 2020, 500, 140),
-('EU44 (Husarz)', 'Siemens Mobility', 2010, 480, 230),
-('ED250 (Pendolino)', 'Alstom', 2014, 400, 250),
-('SM42', 'FabLok', 1975, 200, 90),
-('Gama Marathon', 'PESA Bydgoszcz', 2022, 420, 160),
-('EP07', 'Newag', 1990, 310, 140),
-('Traxx AC3', 'Bombardier', 2019, 470, 200),
-('ED74 (Bydgostia)', 'PESA Bydgoszcz', 2007, 250, 160),
-('ET41', 'PKP Cargo', 1980, 500, 120),
-('EU06', 'English Electric', 1961, 290, 125);
+INSERT INTO LOCOMOTIVES (locomotive_model, company, production_year, pulling_weight, max_speed) VALUES
+('EP09', 'PKP Intercity', 2000, 6000, 160),
+('EU07', 'Newag', 1985, 3000, 125),
+('Husky-500', 'Siemens Mobility', 2018, 7500, 200),
+('ED161 (Dart)', 'PESA Bydgoszcz', 2016, 8200, 160),
+('EP08', 'PKP Intercity', 1978, 6500, 140),
+('E6ACT', 'Newag', 2020, 5000, 140),
+('EU44 (Husarz)', 'Siemens Mobility', 2010, 4080, 230),
+('ED250 (Pendolino)', 'Alstom', 2014, 3300, 250),
+('SM42', 'FabLok', 1975, 8000, 90),
+('Gama Marathon', 'PESA Bydgoszcz', 2022, 7200, 160),
+('EP07', 'Newag', 1990, 8100, 140),
+('Traxx AC3', 'Bombardier', 2019, 7700, 200),
+('ED74 (Bydgostia)', 'PESA Bydgoszcz', 2007, 8500, 160),
+('ET41', 'PKP Cargo', 1980, 9000, 120),
+('EU06', 'English Electric', 1961, 8900, 125);
 
 INSERT INTO CARRIAGES (carriage_type, bike_spaces_quantity, contacts, restrooms_quantity, air_conditioning, carriage_weight) VALUES
 ('Sleeper', 0, 1, 3, 1, 80),
