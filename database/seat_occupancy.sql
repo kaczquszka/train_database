@@ -62,15 +62,6 @@ BEGIN
     RETURN;
 END;
 
-SELECT * FROM TRAIN;
-SELECT * FROM CARRIAGES_IN_TRAIN
---DROP FUNCTION dbo.all_occupancy_on_route
 SELECT *
 FROM dbo.all_occupancy_on_route()
 ORDER BY percentage_occupied DESC;
-
-
-SELECT *
-FROM TRAIN as t
-INNER JOIN dbo.all_occupancy_on_route() AS o
-ON t.train_id = o.train_id
