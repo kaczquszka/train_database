@@ -1,6 +1,8 @@
 USE train_project
 GO
 
+
+--combine connections with starting fees and all assigned pricing
 CREATE VIEW vw_connection_fees AS
 SELECT cf.ticket_id, cf.connection_order, cf.start_fee, pc.pricing_id
 FROM (SELECT c.ticket_id, c.train_id, c.route_id, c.connection_order, r.start_fee
@@ -12,8 +14,10 @@ ON cf.ticket_id = pc.ticket_id AND cf.connection_order = pc.connection_order
 
 GO
 
+--calculate distance travelled during correction
+--add information about price for km and interval where price should apply
 CREATE VIEW vw_all_data AS
-SELECT c.ticket_id, c.connection_order, c.price, c.route_id, c.starting_order, c.destination_order, pc.start_fee,pc.price_for_km,pc.from_km,pc.to_km, (nd.km_travelled-st.km_travelled) AS total_km
+SELECT c.ticket_id, c.connection_order, pc.start_fee,pc.price_for_km,pc.from_km,pc.to_km, (nd.km_travelled-st.km_travelled) AS total_km
 FROM CONNECTIONS c
 INNER JOIN ROUTE_STOPS st
 ON c.route_id = st.route_id AND c.starting_order = st.stop_order 
@@ -27,8 +31,13 @@ ON c.ticket_id = pc.ticket_id AND c.connection_order = pc.connection_order
 
 GO
 
+--sum cost for travelling the km at the price rate
 CREATE VIEW vw_sums_connections AS
-SELECT vw.ticket_id,vw.connection_order, vw.route_id, vw.start_fee,vw.total_km, t.discount_id, d.amount,(CASE WHEN to_km < total_km THEN (to_km-from_km)*price_for_km WHEN from_km < total_km AND to_km>total_km THEN (total_km-from_km)*price_for_km ELSE 0 END) AS cost_for_km 
+SELECT vw.ticket_id,vw.connection_order, vw.start_fee,vw.total_km, t.discount_id, d.amount,
+(CASE 
+WHEN to_km < total_km THEN (to_km-from_km)*price_for_km 
+WHEN from_km < total_km AND to_km>total_km THEN (total_km-from_km)*price_for_km ELSE 0 
+END) AS cost_for_km 
 FROM vw_all_data vw
 INNER JOIN TICKETS t
 ON vw.ticket_id = t.ticket_id
@@ -36,13 +45,8 @@ INNER JOIN DISCOUNTS d
 ON t.discount_id = d.discount_id
 
 GO
-/*
-SELECT * FROM PRICING_FOR_CONNECTION
-SELECT * FROM TICKETS
-SELECT * FROM CONNECTIONS
-SELECT * FROM DISCOUNTS
-SELECT * FROM PRICING
-*/
+
+--sum cost_for_km for all connection for the same ticket, add start_fee only once per connection, apply discount
 SELECT grouped.ticket_id, SUM(before_discount) AS before_discount, SUM(after_discount) AS after_discount  
 FROM (
 	SELECT ticket_id, connection_order,start_fee, amount AS discount, SUM(total_km) AS total_km,(SUM(cost_for_km) + start_fee) AS before_discount, (SUM(cost_for_km) + start_fee) *((100-amount)/100) AS after_discount

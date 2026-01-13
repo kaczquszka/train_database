@@ -4,6 +4,7 @@ GO
 1 QUERY
 returns percentage value of seats that were occupied during total time of journey
 */
+/*
 CREATE FUNCTION dbo.all_occupancy_on_route()
 RETURNS @result TABLE(
 	train_id INT,
@@ -40,6 +41,7 @@ BEGIN
             AND (rs.stop_order >=starting_order AND rs.stop_order <= destination_order) AND train_id = t.train_id) THEN 1
             ELSE 0
         END
+        SELECT *
     FROM TRAIN AS t
     INNER JOIN CARRIAGES_IN_TRAIN AS c
     ON( t.train_id = c.train_id)
@@ -64,4 +66,25 @@ END;
 
 SELECT *
 FROM dbo.all_occupancy_on_route()
+ORDER BY percentage_occupied DESC;
+*/
+
+CREATE VIEW vw_seat_occupancy AS
+SELECT g.train_id, g.route_id,CAST((SUM(g.occupancy)*100.0/COUNT(g.occupancy)) AS DECIMAL(5,2)) AS percentage_occupied 
+FROM( SELECT t.train_id,t.route_id,  s.carriage_id, s.seat_number, rs.station_id, rs.stop_order, 
+(CASE WHEN EXISTS (SELECT * FROM CONNECTIONS
+            WHERE (carriage_id = s.carriage_id AND s.seat_number = seat_number) AND (rs.stop_order >=starting_order AND rs.stop_order <= destination_order) AND train_id = t.train_id) THEN 1
+            ELSE 0 
+            END) AS occupancy
+FROM TRAIN AS t
+INNER JOIN CARRIAGES_IN_TRAIN AS c
+ON( t.train_id = c.train_id)
+
+INNER JOIN SEATS AS s
+ON(c.carriage_id = s.carriage_id)
+
+CROSS JOIN ROUTE_STOPS AS rs
+
+WHERE rs.route_id = t.route_id) AS g
+GROUP BY g.train_id, g.route_id
 ORDER BY percentage_occupied DESC;

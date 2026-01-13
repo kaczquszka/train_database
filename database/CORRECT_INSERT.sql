@@ -95,7 +95,7 @@ INSERT INTO ROUTE_STOPS (route_id, station_id, stop_order, arrival_time, departu
 
 
 INSERT INTO LOCOMOTIVES (locomotive_model, company, production_year, pulling_weight, max_speed) VALUES
-('EP09', 'PKP Intercity', 2000, 6000, 160),
+('EP09', 'PKP Intercity', 2000, 100, 160),
 ('EU07', 'Newag', 1985, 3000, 125),
 ('Husky-500', 'Siemens Mobility', 2018, 7500, 200),
 ('ED161 (Dart)', 'PESA Bydgoszcz', 2016, 8200, 160),
