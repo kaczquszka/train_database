@@ -41,26 +41,24 @@ ORDER BY percentage_occupied DESC;
 GET VALUE OF REVENUE FROM TICKETS, CALCUALTE THE REVENUE PER KM TRAVELLED ADD OCCUPANCY FROM PREVIOUSLY CREATED FUNCTION
 */
 
-CREATE VIEW vw_connections_prices AS
+WITH CTE_connections_prices AS
+(
 SELECT t.ticket_id, t.total_price,c.train_id, c.route_id
 FROM CONNECTIONS AS c
 INNER JOIN TICKETS AS t
-ON c.ticket_id = t.ticket_id;
-
-GO
+ON c.ticket_id = t.ticket_id),
 
 
-CREATE VIEW vw_km_travelled AS
+CTE_km_travelled AS(
 SELECT route_id, km_travelled AS total_km
 FROM ROUTE_STOPS 
-WHERE stop_order = (SELECT MAX(stop_order) FROM ROUTE_STOPS WHERE route_id = route_id);
+WHERE stop_order = (SELECT MAX(stop_order) FROM ROUTE_STOPS WHERE route_id = route_id))
 
-GO
 
 
 SELECT c.train_id, c.route_id, k.total_km, occ.percentage_occupied, SUM(c.total_price) AS total_revenue, (SUM(c.total_price)/k.total_km) AS revenue_per_km
-FROM vw_connections_prices AS c
-INNER JOIN vw_km_travelled AS k
+FROM CTE_connections_prices AS c
+INNER JOIN CTE_km_travelled AS k
 ON c.route_id = k.route_id
 INNER JOIN vw_seat_occupancy AS occ
 ON c.train_id = occ.train_id
@@ -73,7 +71,7 @@ ORDER BY TOTAL_REVENUE DESC;
 IS THE TOTAL WEIGHT OF THE TRAIN IN BOUNDS OF LCOOMOTIVE PULL CAPACITY? (ASSUMING ALL SEATS WILL BE OCCUPIED BY A PERSON WITH AVG WEIGHT ~ 75 KG)
 */
 
-CREATE VIEW vw_total_weight_carriages AS
+WITH vw_total_weight_carriages AS (
 SELECT c.carriage_id, w.total_passengers_weight, c.carriage_weight, (w.total_passengers_weight + c.carriage_weight) AS total_weight
 FROM CARRIAGES AS c
 INNER JOIN (
@@ -81,20 +79,17 @@ INNER JOIN (
 	FROM SEATS
 	GROUP BY carriage_id) AS w
 ON c.carriage_id = w.carriage_id
-GROUP BY c.carriage_id, w.total_passengers_weight, c.carriage_weight
+GROUP BY c.carriage_id, w.total_passengers_weight, c.carriage_weight),
 
-GO 
-
-CREATE VIEW vw_total_weight_train AS
+vw_total_weight_train AS (
 SELECT ct.train_id, t.locomotive_id, SUM(tw.total_weight) AS total_train_weight
 FROM TRAIN AS t
 INNER JOIN CARRIAGES_IN_TRAIN AS ct
 ON t.train_id = ct.train_id
 INNER JOIN vw_total_weight_carriages AS tw
 ON tw.carriage_id = ct.carriage_id
-GROUP BY ct.train_id, t.locomotive_id
+GROUP BY ct.train_id, t.locomotive_id)
 
-GO
 
 SELECT tt.train_id, l.locomotive_id, tt.total_train_weight, l.pulling_weight, (CASE WHEN l.pulling_weight>tt.total_train_weight THEN 'YES' ELSE 'TOO HEAVY!' END) AS in_bounds
 FROM vw_total_weight_train AS tt
@@ -108,20 +103,18 @@ ORDER BY tt.total_train_weight DESC
 CALCULATE PRICE FOR TICKET (SUM OF ALL CONNECTION PRICES) INCLUDING DISCOUNT IF ANY
 */
 --combine connections with starting fees and all assigned pricing
-CREATE VIEW vw_connection_fees AS
+WITH vw_connection_fees AS(
 SELECT cf.ticket_id, cf.connection_order, cf.start_fee, pc.pricing_id
 FROM (SELECT c.ticket_id, c.train_id, c.route_id, c.connection_order, r.start_fee
 FROM CONNECTIONS c
 INNER JOIN ROUTE r
 ON c.route_id = r.route_id) cf
 INNER JOIN PRICING_FOR_CONNECTION pc
-ON cf.ticket_id = pc.ticket_id AND cf.connection_order = pc.connection_order
-
-GO
+ON cf.ticket_id = pc.ticket_id AND cf.connection_order = pc.connection_order),
 
 --calculate distance travelled during correction
 --add information about price for km and interval where price should apply
-CREATE VIEW vw_all_data AS
+ vw_all_data AS (
 SELECT c.ticket_id, c.connection_order, pc.start_fee,pc.price_for_km,pc.from_km,pc.to_km, (nd.km_travelled-st.km_travelled) AS total_km
 FROM CONNECTIONS c
 INNER JOIN ROUTE_STOPS st
@@ -132,12 +125,10 @@ INNER JOIN (SELECT cf.ticket_id, cf.connection_order, cf.start_fee, p.pricing_id
 FROM vw_connection_fees AS cf
 INNER JOIN PRICING AS p
 ON cf.pricing_id = p.pricing_id) AS pc
-ON c.ticket_id = pc.ticket_id AND c.connection_order = pc.connection_order
-
-GO
+ON c.ticket_id = pc.ticket_id AND c.connection_order = pc.connection_order),
 
 --sum cost for travelling the km at the price rate
-CREATE VIEW vw_sums_connections AS
+vw_sums_connections AS (
 SELECT vw.ticket_id,vw.connection_order, vw.start_fee,vw.total_km, t.discount_id, d.amount,
 (CASE 
 WHEN to_km < total_km THEN (to_km-from_km)*price_for_km 
@@ -147,9 +138,8 @@ FROM vw_all_data vw
 INNER JOIN TICKETS t
 ON vw.ticket_id = t.ticket_id
 INNER JOIN DISCOUNTS d
-ON t.discount_id = d.discount_id
+ON t.discount_id = d.discount_id)
 
-GO
 
 --sum cost_for_km for all connection for the same ticket, add start_fee only once per connection, apply discount
 SELECT grouped.ticket_id, SUM(before_discount) AS before_discount, SUM(after_discount) AS after_discount  
