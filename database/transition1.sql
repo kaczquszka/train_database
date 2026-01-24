@@ -2,7 +2,8 @@ USE train_project
 GO
 
 
-
+-- NO ISOLATION
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 BEGIN TRANSACTION;
 
 INSERT INTO TICKETS (total_price, payment_method, discount_id, users_id) 
@@ -29,10 +30,10 @@ ELSE
     PRINT('rolled back');
     END
    
-   /*
-SELECT * FROM CONNECTIONS WHERE seat_number = 1 AND carriage_id =1 AND train_id = 1
+
+SELECT * FROM CONNECTIONS WHERE seat_number = 5 AND carriage_id =1 AND train_id = 1
 SELECT* FROM TICKETS
-*/
+
 /*
 BEGIN TRANSACTION;
 

@@ -202,7 +202,8 @@ INSERT INTO PRICING (price_for_km, class, from_km, to_km) VALUES
 --ONE PRICE
 (0.12, 0, 0.00, 3350.00),
 (0.20, 1, 0.00, 3350.00),
-(0.15, 2, 0.00, 3350.00);
+(0.15, 2, 0.00, 3350.00),
+(0.3, 1, 0.00, 400.00);
 
 
 INSERT INTO ROUTE_PRICING (route_id, pricing_id) VALUES
