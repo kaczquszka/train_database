@@ -24,8 +24,6 @@ BEGIN
     
 END
 
-
-
 INSERT INTO ROUTE_PRICING (route_id, pricing_id) VALUES
     ('IC2810', @TargetPricingID)
 
