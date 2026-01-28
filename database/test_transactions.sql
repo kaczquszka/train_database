@@ -6,6 +6,9 @@ GO
 SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
 SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
 SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+*/
+
+/*
 SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 BEGIN TRANSACTION;
 
@@ -35,13 +38,17 @@ ELSE
    
  
 SELECT * FROM CONNECTIONS WHERE seat_number = 5 AND carriage_id =1 AND train_id = 1
-SELECT* FROM TICKETS */
+SELECT* FROM TICKETS 
 
+
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+*/
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
 /*
 SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
-BEGIN TRANSACTION;
+BEGIN TRANSACTION
 
-DECLARE @TargetPricingID INT = ( SELECT pricing_id 
+DECLARE @TargetPricingID INT = ( SELECT TOP 1 pricing_id 
 FROM PRICING 
 WHERE from_km = 0 
   AND to_km = 400 
@@ -63,17 +70,19 @@ END
 
 
 INSERT INTO ROUTE_PRICING (route_id, pricing_id) VALUES
-    ('IC2810', @TargetPricingID)
+    ('TLK4301', @TargetPricingID)
 
 
 COMMIT TRANSACTION;
 
 SELECT * FROM ROUTE_PRICING
-SELECT * FROM PRICING */
+SELECT * FROM PRICING 
+
+*/
 ---------------------------------------------------------------------------------------------------------------------------------
 
-
-SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+--SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
 
 BEGIN TRANSACTION;
 

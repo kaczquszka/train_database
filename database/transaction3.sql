@@ -1,7 +1,9 @@
 USE train_project;
 GO
 
-SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+--without isolation another user assigned the same locomotive for another train for the same date
+SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+--SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
 
 BEGIN TRANSACTION;
 
@@ -29,5 +31,3 @@ COMMIT TRANSACTION;
 
 
 SELECT * FROM TRAIN WHERE train_id = 2
-
---without isolation another user assigned the same locomotive for another train for the same date

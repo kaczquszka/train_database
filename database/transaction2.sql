@@ -1,11 +1,11 @@
 USE train_project
 GO
 
+--SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
-
 BEGIN TRANSACTION;
 
-DECLARE @TargetPricingID INT = ( SELECT pricing_id 
+DECLARE @TargetPricingID INT = ( SELECT TOP 1 pricing_id 
 FROM PRICING 
 WHERE from_km = 0 
   AND to_km = 400 
@@ -25,7 +25,7 @@ BEGIN
 END
 
 INSERT INTO ROUTE_PRICING (route_id, pricing_id) VALUES
-    ('IC2810', @TargetPricingID)
+    ('IC8100', @TargetPricingID)
 
 
 COMMIT TRANSACTION;
